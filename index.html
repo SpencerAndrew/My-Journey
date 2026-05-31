@@ -80,16 +80,38 @@
             </div>
         </div>
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight">
-            My Year in <span class="gradient-text">Activity</span>
+            My <span id="display-year">Year</span> in <span class="gradient-text">Activity</span>
         </h1>
         <p class="text-lg text-gray-600 max-w-2xl">
             A comprehensive overview of how I moved, where I went, and how I spent my time over the past year.
         </p>
         
-        <!-- Interactive button to demonstrate the example data working -->
-        <button onclick="loadRandomExampleData()" class="mt-4 px-5 py-2.5 bg-white border border-gray-200 shadow-sm rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 hover:shadow transition-all flex items-center group">
-            <i class="ph ph-arrows-clockwise mr-2 text-google-blue group-hover:rotate-180 transition-transform duration-500"></i> Refresh Example Data
-        </button>
+        <!-- Controls: Year Selector and Refresh Button -->
+        <div class="flex flex-wrap justify-center gap-4 mt-4">
+            <!-- Year Dropdown -->
+            <div class="relative">
+                <select id="yearSelect" onchange="changeYear()" class="appearance-none bg-white border border-gray-200 shadow-sm rounded-full py-2.5 pl-5 pr-10 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:shadow transition-all focus:outline-none focus:ring-2 focus:ring-google-blue/50 cursor-pointer">
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                    <option value="2015">2015</option>
+                </select>
+                <i class="ph ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+            </div>
+            
+            <!-- Refresh Button -->
+            <button onclick="loadRandomExampleData()" class="px-5 py-2.5 bg-white border border-gray-200 shadow-sm rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 hover:shadow transition-all flex items-center group">
+                <i class="ph ph-arrows-clockwise mr-2 text-google-blue group-hover:rotate-180 transition-transform duration-500"></i> Refresh Example Data
+            </button>
+        </div>
     </header>
 
     <!-- Main Content Grid -->
@@ -390,12 +412,22 @@
             updateDashboardWithData(exampleData);
         }
 
+        // Handle changing the year
+        function changeYear() {
+            const selectedYear = document.getElementById('yearSelect').value;
+            document.getElementById('display-year').innerText = selectedYear;
+            
+            // In a real app, you would fetch data for 'selectedYear' here. 
+            // For now, we'll generate new random example data.
+            loadRandomExampleData();
+        }
+
         // Robust initialization to ensure Chart.js is fully loaded before rendering
         let chartInitAttempts = 0;
         function checkChartAndInit() {
             if (typeof Chart !== 'undefined') {
                 initCharts();           
-                loadRandomExampleData(); 
+                changeYear(); // Initialize with the default selected year
             } else {
                 chartInitAttempts++;
                 if (chartInitAttempts < 20) {
