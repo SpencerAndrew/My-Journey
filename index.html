@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Year in Review - Activity Dashboard</title>
+    <!-- Include Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include Google Fonts (Product Sans lookalike) -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Include Phosphor Icons for modern icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Include Chart.js for data visualization (Explicit UMD build) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Open Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        google: {
+                            blue: '#4285F4',
+                            red: '#EA4335',
+                            yellow: '#FBBC05',
+                            green: '#34A853',
+                            gray: '#F8F9FA', // Light background
+                            dark: '#202124',  // Dark text
+                            border: '#DADCE0' // Subtle borders
+                        }
+                    },
+                    boxShadow: {
+                        'google': '0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15)',
+                        'google-hover': '0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F8F9FA;
+            color: #202124;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #DADCE0;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+            transition: box-shadow 0.2s ease-in-out;
+        }
+        
+        .card:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen antialiased p-4 md:p-8">
+
+    <!-- Header Section -->
+    <header class="max-w-6xl mx-auto mb-10 flex flex-col items-center justify-center text-center space-y-4">
+        <div class="flex items-center space-x-2">
+            <!-- Simulated Google-style dots logo -->
+            <div class="flex space-x-1">
+                <div class="w-4 h-4 rounded-full bg-google-blue"></div>
+                <div class="w-4 h-4 rounded-full bg-google-red"></div>
+                <div class="w-4 h-4 rounded-full bg-google-yellow"></div>
+                <div class="w-4 h-4 rounded-full bg-google-green"></div>
+            </div>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight">
+            My Year in <span class="gradient-text">Activity</span>
+        </h1>
+        <p class="text-lg text-gray-600 max-w-2xl">
+            A comprehensive overview of how I moved, where I went, and how I spent my time over the past year.
+        </p>
+        
+        <!-- Interactive button to demonstrate the example data working -->
+        <button onclick="loadRandomExampleData()" class="mt-4 px-5 py-2.5 bg-white border border-gray-200 shadow-sm rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 hover:shadow transition-all flex items-center group">
+            <i class="ph ph-arrows-clockwise mr-2 text-google-blue group-hover:rotate-180 transition-transform duration-500"></i> Refresh Example Data
+        </button>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Stat Card: Driving -->
+        <div class="card p-6 flex flex-col relative overflow-hidden group cursor-pointer">
+            <div class="absolute top-0 right-0 w-16 h-16 bg-google-blue opacity-10 rounded-bl-full transition-transform group-hover:scale-125"></div>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-700">Driving</h2>
+                <i class="ph ph-car-profile text-3xl text-google-blue"></i>
+            </div>
+            <div class="space-y-1">
+                <p class="text-3xl font-bold text-google-dark" id="stat-drive-dist">0 <span class="text-sm font-normal text-gray-500">mi</span></p>
+                <p class="text-sm text-gray-500 flex items-center">
+                    <i class="ph ph-clock mr-1"></i> <span id="stat-drive-time">0 hrs</span>
+                </p>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <p class="text-xs text-gray-400">Total distance covered by car</p>
+            </div>
+        </div>
+
+        <!-- Stat Card: Walking -->
+        <div class="card p-6 flex flex-col relative overflow-hidden group cursor-pointer">
+            <div class="absolute top-0 right-0 w-16 h-16 bg-google-red opacity-10 rounded-bl-full transition-transform group-hover:scale-125"></div>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-700">Walking</h2>
+                <i class="ph ph-person-simple-walk text-3xl text-google-red"></i>
+            </div>
+            <div class="space-y-1">
+                <p class="text-3xl font-bold text-google-dark" id="stat-walk-dist">0 <span class="text-sm font-normal text-gray-500">mi</span></p>
+                <p class="text-sm text-gray-500 flex items-center">
+                    <i class="ph ph-clock mr-1"></i> <span id="stat-walk-time">0 hrs</span>
+                </p>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <p class="text-xs text-gray-400">Steps taken on foot</p>
+            </div>
+        </div>
+
+        <!-- Stat Card: Biking -->
+        <div class="card p-6 flex flex-col relative overflow-hidden group cursor-pointer">
+            <div class="absolute top-0 right-0 w-16 h-16 bg-google-yellow opacity-10 rounded-bl-full transition-transform group-hover:scale-125"></div>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-700">Biking</h2>
+                <i class="ph ph-bicycle text-3xl text-google-yellow"></i>
+            </div>
+            <div class="space-y-1">
+                <p class="text-3xl font-bold text-google-dark" id="stat-bike-dist">0 <span class="text-sm font-normal text-gray-500">mi</span></p>
+                <p class="text-sm text-gray-500 flex items-center">
+                    <i class="ph ph-clock mr-1"></i> <span id="stat-bike-time">0 hrs</span>
+                </p>
+            </div>
+             <div class="mt-4 pt-4 border-t border-gray-100">
+                <p class="text-xs text-gray-400">Distance cycled</p>
+            </div>
+        </div>
+
+        <!-- Stat Card: Places -->
+        <div class="card p-6 flex flex-col relative overflow-hidden group cursor-pointer">
+            <div class="absolute top-0 right-0 w-16 h-16 bg-google-green opacity-10 rounded-bl-full transition-transform group-hover:scale-125"></div>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-700">Places Visited</h2>
+                <i class="ph ph-storefront text-3xl text-google-green"></i>
+            </div>
+             <div class="space-y-1">
+                <div class="flex justify-between items-end">
+                    <p class="text-2xl font-bold text-google-dark" id="stat-shops">0 <span class="text-sm font-normal text-gray-500">shops</span></p>
+                    <p class="text-xs text-gray-500 mb-1 flex items-center"><i class="ph ph-clock mr-1"></i><span id="stat-shops-time">0h</span></p>
+                </div>
+                <div class="flex justify-between items-end">
+                     <p class="text-2xl font-bold text-google-dark" id="stat-restaurants">0 <span class="text-sm font-normal text-gray-500">dining</span></p>
+                     <p class="text-xs text-gray-500 mb-1 flex items-center"><i class="ph ph-clock mr-1"></i><span id="stat-rest-time">0h</span></p>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <p class="text-xs text-gray-400">Time spent at locations</p>
+            </div>
+        </div>
+
+        <!-- Chart Section: Distance Overview -->
+        <div class="card p-6 col-span-1 md:col-span-2 lg:col-span-2">
+            <h3 class="text-xl font-semibold mb-6 flex items-center">
+                <i class="ph ph-map-pin-line text-google-blue mr-2"></i> Distance Breakdown
+            </h3>
+            <div class="relative h-64 w-full">
+                <canvas id="distanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart Section: Time Allocation -->
+        <div class="card p-6 col-span-1 md:col-span-2 lg:col-span-2">
+             <h3 class="text-xl font-semibold mb-6 flex items-center">
+                <i class="ph ph-hourglass-medium text-google-red mr-2"></i> Time Allocation
+            </h3>
+            <div class="relative h-64 w-full flex justify-center">
+                <canvas id="timeChart"></canvas>
+            </div>
+        </div>
+        
+         <!-- Monthly Trend Chart -->
+        <div class="card p-6 col-span-1 md:col-span-2 lg:col-span-4 mb-10">
+             <h3 class="text-xl font-semibold mb-6 flex items-center">
+                <i class="ph ph-trend-up text-google-green mr-2"></i> Activity Trends
+            </h3>
+            <div class="relative h-80 w-full">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Google Theme Colors
+        const colors = {
+            blue: '#4285F4',
+            red: '#EA4335',
+            yellow: '#FBBC05',
+            green: '#34A853',
+            blueLight: 'rgba(66, 133, 244, 0.2)',
+            redLight: 'rgba(234, 67, 53, 0.2)',
+        };
+
+        // Store Chart instances globally so they can be updated later
+        let distChart, tmChart, trndChart;
+
+        // Function to animate numbers smoothly
+        function animateValue(id, start, end, duration, formatStr = '') {
+            const obj = document.getElementById(id);
+            if (!obj) return;
+            
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // Ease out cubic
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const currentVal = Math.floor(easeOut * (end - start) + start);
+                
+                // Keep the span formatting (like the "mi" or "shops" tags) intact
+                const spanMatch = obj.innerHTML.match(/<span.*<\/span>/);
+                const spanHTML = spanMatch ? spanMatch[0] : '';
+                
+                obj.innerHTML = currentVal.toLocaleString() + (formatStr ? formatStr : '') + ' ' + spanHTML;
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Initialize Charts with empty datasets and Google styling
+        function initCharts() {
+            if (typeof Chart === 'undefined') {
+                console.error("Chart.js is still not defined. The CDN link may be blocked.");
+                return;
+            }
+
+            Chart.defaults.font.family = '"Open Sans", sans-serif';
+            Chart.defaults.color = '#5f6368';
+            Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(32, 33, 36, 0.9)';
+            Chart.defaults.plugins.tooltip.padding = 10;
+            Chart.defaults.plugins.tooltip.cornerRadius = 8;
+
+            // 1. Distance Bar Chart Initialization
+            const ctxDistance = document.getElementById('distanceChart').getContext('2d');
+            distChart = new Chart(ctxDistance, {
+                type: 'bar',
+                data: {
+                    labels: ['Driving', 'Walking', 'Biking'],
+                    datasets: [{
+                        label: 'Distance (miles)',
+                        data: [0, 0, 0], // Starts at 0
+                        backgroundColor: [colors.blue, colors.red, colors.yellow],
+                        borderRadius: 6,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f3f4', drawBorder: false } },
+                        x: { grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+
+            // 2. Time Doughnut Chart Initialization
+            const ctxTime = document.getElementById('timeChart').getContext('2d');
+            tmChart = new Chart(ctxTime, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Driving', 'Walking', 'Biking', 'Shops', 'Dining'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0], // Starts at 0
+                        backgroundColor: [colors.blue, colors.red, colors.yellow, colors.green, '#8AB4F8'],
+                        borderWidth: 0, hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '70%',
+                    plugins: { legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8 } } }
+                }
+            });
+
+            // 3. Monthly Trends Line Chart Initialization
+            const ctxTrend = document.getElementById('trendChart').getContext('2d');
+            trndChart = new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [
+                        {
+                            label: 'Driving Distance', data: [],
+                            borderColor: colors.blue, backgroundColor: colors.blueLight,
+                            borderWidth: 3, pointBackgroundColor: colors.blue,
+                            pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
+                            fill: true, tension: 0.4
+                        },
+                        {
+                            label: 'Walking Distance', data: [],
+                            borderColor: colors.red, backgroundColor: 'transparent',
+                            borderWidth: 3, pointBackgroundColor: colors.red,
+                            pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
+                            fill: false, tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f3f4', drawBorder: false } },
+                        x: { grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+        }
+
+        // --- ADD YOUR ACTUAL DATA HERE LATER ---
+        // You can call this function whenever your real data finishes loading
+        function updateDashboardWithData(data) {
+            if (!distChart || !tmChart || !trndChart) return;
+
+            // Helper to get current number for smooth transitions
+            const getVal = (id) => parseInt(document.getElementById(id).innerText.replace(/,/g, '')) || 0;
+
+            // 1. Update Top Stat Cards
+            animateValue('stat-drive-dist', getVal('stat-drive-dist'), data.driving.distance, 1500);
+            animateValue('stat-walk-dist', getVal('stat-walk-dist'), data.walking.distance, 1500);
+            animateValue('stat-bike-dist', getVal('stat-bike-dist'), data.biking.distance, 1500);
+            animateValue('stat-shops', getVal('stat-shops'), data.places.shops.count, 1500);
+            animateValue('stat-restaurants', getVal('stat-restaurants'), data.places.restaurants.count, 1500);
+
+            // Update simple text tags for time spent
+            document.getElementById('stat-drive-time').textContent = data.driving.time + ' hrs';
+            document.getElementById('stat-walk-time').textContent = data.walking.time + ' hrs';
+            document.getElementById('stat-bike-time').textContent = data.biking.time + ' hrs';
+            document.getElementById('stat-shops-time').textContent = data.places.shops.time + ' hrs';
+            document.getElementById('stat-rest-time').textContent = data.places.restaurants.time + ' hrs';
+
+            // 2. Push new data to Chart modules & update them
+            distChart.data.datasets[0].data = [data.driving.distance, data.walking.distance, data.biking.distance];
+            distChart.update();
+
+            tmChart.data.datasets[0].data = [data.driving.time, data.walking.time, data.biking.time, data.places.shops.time, data.places.restaurants.time];
+            tmChart.update();
+
+            trndChart.data.datasets[0].data = data.monthlyTrends.driving;
+            trndChart.data.datasets[1].data = data.monthlyTrends.walking;
+            trndChart.update();
+        }
+
+        // Example Data Generator
+        function loadRandomExampleData() {
+            const exampleData = {
+                driving: { distance: Math.floor(Math.random() * 10000) + 5000, time: Math.floor(Math.random() * 200) + 150 },
+                walking: { distance: Math.floor(Math.random() * 500) + 400, time: Math.floor(Math.random() * 150) + 100 },
+                biking: { distance: Math.floor(Math.random() * 300) + 50, time: Math.floor(Math.random() * 50) + 20 },
+                places: {
+                    shops: { count: Math.floor(Math.random() * 100) + 50, time: Math.floor(Math.random() * 100) + 50 },
+                    restaurants: { count: Math.floor(Math.random() * 80) + 40, time: Math.floor(Math.random() * 120) + 60 }
+                },
+                monthlyTrends: {
+                    driving: Array.from({length: 12}, () => Math.floor(Math.random() * 800) + 600),
+                    walking: Array.from({length: 12}, () => Math.floor(Math.random() * 60) + 20)
+                }
+            };
+            
+            // Pass the generated data to the dashboard updater
+            updateDashboardWithData(exampleData);
+        }
+
+        // Run when page load is completely finished to ensure Chart.js script is loaded
+        window.addEventListener('load', () => {
+            initCharts();           
+            loadRandomExampleData(); 
+        });
+    </script>
+</body>
+</html>
